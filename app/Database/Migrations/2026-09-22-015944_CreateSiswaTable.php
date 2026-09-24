@@ -12,8 +12,8 @@ class CreateSiswaTable extends Migration
             'id'           => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'nisn'         => ['type' => 'VARCHAR', 'constraint' => 20, 'unique' => true],
             'nama_lengkap' => ['type' => 'VARCHAR', 'constraint' => 100],
-            'kelas'        => ['type' => 'VARCHAR', 'constraint' => 10], // Misal: X, XI, XII
-            'jurusan'      => ['type' => 'VARCHAR', 'constraint' => 50], // Misal: MIPA, IPS, Bahasa
+            'kelas'        => ['type' => 'VARCHAR', 'constraint' => 10], // X, XI, XII
+            'jurusan'      => ['type' => 'VARCHAR', 'constraint' => 50], // MIPA, IPS
             'created_at'   => ['type' => 'DATETIME', 'null' => true],
             'updated_at'   => ['type' => 'DATETIME', 'null' => true],
         ]);

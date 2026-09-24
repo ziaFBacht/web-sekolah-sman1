@@ -9,30 +9,55 @@
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden text-gray-800 font-sans">
 
-    <!-- Sidebar Master -->
+    <!-- Sidebar -->
     <?= $this->include('partials/sidebar_admin') ?>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-y-auto">
-        <!-- Topbar Master -->
-        <header class="h-20 bg-white shadow-sm flex items-center justify-between px-8 z-10">
-            <h1 class="text-2xl font-bold text-gray-800"><?= $title ?? 'Dashboard' ?></h1>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden md:block">
-                    <p class="text-sm font-bold text-gray-800"><?= esc(session()->get('username')) ?></p>
-                    <p class="text-xs text-blue-600 font-semibold uppercase">Administrator</p>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-600 font-bold text-lg">
-                    <?= strtoupper(substr(session()->get('username'), 0, 1)) ?>
-                </div>
-            </div>
-        </header>
+    <!-- Kontainer Utama -->
+    <div class="flex-1 flex flex-col overflow-hidden bg-gray-50">
+        
+        <?= $this->include('partials/topbar_admin') ?>
 
-        <!-- Disini konten spesifik per halaman akan dirender -->
-        <main class="p-8">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
             <?= $this->renderSection('content') ?>
         </main>
-    </div>
 
+    </div>
+<script>
+// FUNGSI EXPORT EXCEL GLOBAL (Client-Side)
+function exportToExcel(tableId, filename) {
+    let table = document.getElementById(tableId);
+    let html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+    html += '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+    html += '<x:Name>Sheet 1</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>';
+    html += '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+    html += '<table border="1">';
+    
+    let rows = table.querySelectorAll('tr');
+    rows.forEach(row => {
+        // Jangan ekspor baris yang disembunyikan oleh filter
+        if (row.style.display !== 'none') { 
+            html += '<tr>';
+            let cols = row.querySelectorAll('th, td');
+            // Abaikan kolom terakhir (Aksi)
+            let colCount = cols.length > 1 ? cols.length - 1 : cols.length; 
+            
+            for (let i = 0; i < colCount; i++) {
+                // Bersihkan teks dari label-label berlebih
+                let cellText = cols[i].innerText.replace(/Akun:|Belum Punya Akun/g, '').trim();
+                html += `<td>${cellText}</td>`;
+            }
+            html += '</tr>';
+        }
+    });
+    
+    html += '</table></body></html>';
+    
+    let blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename + '_' + new Date().toISOString().slice(0,10) + '.xls';
+    a.click();
+}
+</script>
 </body>
 </html>

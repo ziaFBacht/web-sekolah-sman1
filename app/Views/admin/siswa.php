@@ -11,15 +11,39 @@
 <?php endif; ?>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
         <h2 class="text-lg font-bold text-gray-800">Daftar Induk Siswa</h2>
         <button onclick="document.getElementById('modalTambah').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition shadow-sm">
             <i class="fas fa-plus mr-1"></i> Tambah Siswa
         </button>
     </div>
 
+    <!-- Baris Filter & Export -->
+    <div class="px-6 py-4 bg-gray-50/80 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+            <input type="text" id="searchSiswa" placeholder="Cari NISN / Nama..." class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring focus:ring-blue-200 outline-none w-full md:w-64">
+            
+            <select id="filterKelas" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring focus:ring-blue-200 outline-none">
+                <option value="">Semua Kelas</option>
+                <option value="X">Kelas X</option>
+                <option value="XI">Kelas XI</option>
+                <option value="XII">Kelas XII</option>
+            </select>
+            
+            <select id="filterJurusan" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring focus:ring-blue-200 outline-none">
+                <option value="">Semua Jurusan</option>
+                <option value="MIPA">MIPA</option>
+                <option value="IPS">IPS</option>
+            </select>
+        </div>
+        
+        <button onclick="exportToExcel('tabelSiswa', 'Data_Induk_Siswa')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition shadow-sm flex items-center shrink-0">
+            <i class="fas fa-file-excel mr-2"></i> Export Excel
+        </button>
+    </div>
+
     <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table id="tabelSiswa" class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-white border-b text-gray-500 text-sm uppercase tracking-wider">
                     <th class="px-6 py-4 font-semibold">NISN</th>
@@ -34,12 +58,12 @@
                     <tr><td colspan="5" class="text-center py-8 text-gray-500">Belum ada data siswa.</td></tr>
                 <?php endif; ?>
                 <?php foreach($siswa as $row): ?>
-                <tr class="hover:bg-blue-50/50 transition">
+                <tr class="hover:bg-blue-50/50 transition row-data">
                     <td class="px-6 py-4 font-bold text-gray-900"><?= esc($row['nisn']) ?></td>
                     <td class="px-6 py-4">
-                    <div class="font-bold text-gray-800"><?= esc($row['nama_lengkap']) ?></div>
+                        <div class="font-bold text-gray-800"><?= esc($row['nama_lengkap']) ?></div>
                         <?php if($row['username']): ?>
-                            <div class="text-xs mt-1 text-green-600 font-semibold bg-green-50 inline-block px-2 py-0.5 rounded border border-green-200">
+                            <div class="text-xs mt-1 text-emerald-600 font-semibold bg-emerald-50 inline-block px-2 py-0.5 rounded border border-emerald-200">
                                 <i class="fas fa-link mr-1"></i> Akun: <?= esc($row['username']) ?>
                             </div>
                         <?php else: ?>
@@ -48,8 +72,10 @@
                             </div>
                         <?php endif; ?>
                     </td>
-                    <td class="px-6 py-4"><span class="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded text-xs"><?= esc($row['kelas']) ?></span></td>
-                    <td class="px-6 py-4"><?= esc($row['jurusan']) ?></td>
+                    <td class="px-6 py-4">
+                        <span class="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded text-xs col-kelas"><?= esc($row['kelas']) ?></span>
+                    </td>
+                    <td class="px-6 py-4 col-jurusan"><?= esc($row['jurusan']) ?></td>
                     <td class="px-6 py-4 text-center space-x-2">
                         <button onclick="openEditModal('<?= $row['id'] ?>', '<?= esc($row['nisn']) ?>', '<?= esc($row['nama_lengkap']) ?>', '<?= esc($row['kelas']) ?>', '<?= esc($row['jurusan']) ?>')" class="text-blue-500 hover:text-blue-700 bg-white shadow-sm border p-2 rounded transition">
                             <i class="fas fa-edit"></i>
@@ -79,7 +105,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1">Jurusan</label>
-                    <select name="jurusan" required class="w-full border rounded px-3 py-2"><option value="MIPA">MIPA</option><option value="IPS">IPS</option><option value="Bahasa">Bahasa</option></select>
+                    <select name="jurusan" required class="w-full border rounded px-3 py-2"><option value="MIPA">MIPA</option><option value="IPS">IPS</option></select>
                 </div>
             </div>
             <div class="flex justify-end space-x-2 mt-6">
@@ -105,7 +131,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1">Jurusan</label>
-                    <select name="jurusan" id="editJurusan" required class="w-full border rounded px-3 py-2"><option value="MIPA">MIPA</option><option value="IPS">IPS</option><option value="Bahasa">Bahasa</option></select>
+                    <select name="jurusan" id="editJurusan" required class="w-full border rounded px-3 py-2"><option value="MIPA">MIPA</option><option value="IPS">IPS</option></select>
                 </div>
             </div>
             <div class="flex justify-end space-x-2 mt-6">
@@ -117,6 +143,7 @@
 </div>
 
 <script>
+    // Fungsi Modal Edit
     function openEditModal(id, nisn, nama, kelas, jurusan) {
         document.getElementById('editId').value = id;
         document.getElementById('editNisn').value = nisn;
@@ -125,5 +152,34 @@
         document.getElementById('editJurusan').value = jurusan;
         document.getElementById('modalEdit').classList.remove('hidden');
     }
+
+    // Fungsi Filter Siswa
+    function filterSiswa() {
+        let search = document.getElementById('searchSiswa').value.toLowerCase();
+        let filterKelas = document.getElementById('filterKelas').value.toLowerCase();
+        let filterJurusan = document.getElementById('filterJurusan').value.toLowerCase();
+        let rows = document.querySelectorAll('#tabelSiswa tbody tr.row-data');
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            let kelas = row.querySelector('.col-kelas').innerText.toLowerCase();
+            let jurusan = row.querySelector('.col-jurusan').innerText.toLowerCase();
+
+            let matchSearch = text.includes(search);
+            let matchKelas = filterKelas === "" || kelas === filterKelas;
+            let matchJurusan = filterJurusan === "" || jurusan === filterJurusan;
+
+            if (matchSearch && matchKelas && matchJurusan) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('searchSiswa').addEventListener('keyup', filterSiswa);
+    document.getElementById('filterKelas').addEventListener('change', filterSiswa);
+    document.getElementById('filterJurusan').addEventListener('change', filterSiswa);
 </script>
+
 <?= $this->endSection() ?>

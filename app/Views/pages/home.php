@@ -21,9 +21,9 @@
 
     <!-- Teks Konten -->
     <div class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mt-20">
-        <span class="inline-block py-1.5 px-4 rounded-full bg-secondary/20 text-secondary border border-secondary/50 text-sm font-bold tracking-wider mb-6 backdrop-blur-sm">
+        <!-- span class="inline-block py-1.5 px-4 rounded-full bg-secondary/20 text-secondary border border-secondary/50 text-sm font-bold tracking-wider mb-6 backdrop-blur-sm">
             PENDAFTARAN PPDB 2026 TELAH DIBUKA
-        </span>
+        </span -->
         
         <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight drop-shadow-lg">
             Mencetak Generasi <br>
@@ -36,9 +36,11 @@
         
         <!-- Tombol Aksi -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#" class="bg-secondary hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition transform hover:-translate-y-1 shadow-xl flex items-center justify-center gap-2">
+            
+            <!--a href="#" class="bg-secondary hover:bg-yellow-500 text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition transform hover:-translate-y-1 shadow-xl flex items-center justify-center gap-2">
                 Daftar PPDB Sekarang
-            </a>
+            </a-->
+
             <a href="https://www.youtube.com/watch?v=8yyoXurZAk0" target="_blank" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-bold text-lg transition flex items-center justify-center gap-2">
                 <i class="fas fa-play-circle text-2xl"></i> Tonton Profil
             </a>

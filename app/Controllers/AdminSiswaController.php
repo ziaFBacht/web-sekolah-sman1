@@ -1,14 +1,21 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Models\SiswaModel;
+use App\Models\AuditLogModel;
 
 class AdminSiswaController extends BaseController
 {
+    protected $auditLog;
+
     public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
     {
         parent::initController($request, $response, $logger);
         session(); 
+        
+        // Inisialisasi model audit log di sini agar bisa diakses semua fungsi
+        $this->auditLog = new AuditLogModel();
     }
 
     private function checkAccess()
@@ -55,9 +62,12 @@ class AdminSiswaController extends BaseController
 
         $siswaModel = new SiswaModel();
         $siswaModel->insert($this->request->getPost());
+        $newSiswaId = $siswaModel->getInsertID(); 
 
-        session()->setFlashdata('success', 'Data siswa berhasil ditambahkan.');
-        return redirect()->to('/admin/siswa');
+        // Pemanggilan log untuk INSERT menggunakan $this->
+        $this->auditLog->recordLog('INSERT', 'siswa', $newSiswaId, $this->request->getPost('nama_lengkap'));
+
+        return redirect()->to('/admin/siswa')->with('success', 'Data berhasil ditambahkan');
     }
 
     public function update()
@@ -74,8 +84,10 @@ class AdminSiswaController extends BaseController
             'jurusan'      => $this->request->getPost('jurusan'),
         ]);
 
-        session()->setFlashdata('success', 'Data siswa berhasil diperbarui.');
-        return redirect()->to('/admin/siswa');
+        // Pemanggilan log untuk UPDATE
+        $this->auditLog->recordLog('UPDATE', 'siswa', $id, $this->request->getPost('nama_lengkap'));
+
+        return redirect()->to('/admin/siswa')->with('success', 'Data berhasil diupdate');
     }
 
     public function delete($id)
@@ -83,9 +95,12 @@ class AdminSiswaController extends BaseController
         if (!$this->checkAccess()) return redirect()->to('/login');
 
         $siswaModel = new SiswaModel();
+        $siswa = $siswaModel->find($id);
         $siswaModel->delete($id);
 
-        session()->setFlashdata('success', 'Data siswa berhasil dihapus.');
-        return redirect()->to('/admin/siswa');
+        // Pemanggilan log untuk DELETE
+        $this->auditLog->recordLog('DELETE', 'siswa', $id, $siswa['nama_lengkap']);
+
+        return redirect()->to('/admin/siswa')->with('success', 'Data berhasil dihapus');
     }
 }

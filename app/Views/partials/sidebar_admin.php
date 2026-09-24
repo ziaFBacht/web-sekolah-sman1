@@ -13,7 +13,7 @@
         </div>
         
         <a href="<?= base_url('admin/users') ?>" class="block py-2.5 px-4 rounded transition <?= (strpos(current_url(), 'admin/users') !== false) ? 'bg-blue-800 text-white font-bold' : 'hover:bg-blue-800 text-blue-200' ?>">
-            <i class="fas fa-user-shield w-6 text-center mr-2"></i> Kelola Akun Login
+            <i class="fas fa-user-shield w-6 text-center mr-2"></i> Kelola Akun
         </a>
 
         <div class="pt-4 pb-2">
@@ -23,7 +23,7 @@
         <a href="<?= base_url('admin/siswa') ?>" class="block py-2.5 px-4 rounded transition <?= (strpos(current_url(), 'admin/siswa') !== false) ? 'bg-blue-800 text-white font-bold' : 'hover:bg-blue-800 hover:text-white text-blue-200' ?>">
             <i class="fas fa-user-graduate w-6 text-center mr-2"></i> Data Siswa
         </a>
-        <a href="#" class="block py-2.5 px-4 rounded transition hover:bg-blue-800 hover:text-white text-blue-200">
+        <a href="<?= base_url('admin/guru') ?>" class="block py-2.5 px-4 rounded transition hover:bg-blue-800 hover:text-white text-blue-200">
             <i class="fas fa-chalkboard-teacher w-6 text-center mr-2"></i> Data Guru
         </a>
     </nav>

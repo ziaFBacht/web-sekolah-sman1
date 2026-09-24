@@ -9,6 +9,9 @@ $routes->get('login', 'AuthController::index');
 $routes->post('login/process', 'AuthController::process');
 $routes->get('logout', 'AuthController::logout');
 
+$routes->get('/profil', 'Home::profil');
+$routes->get('/berita', 'Home::berita');
+
 // Kelompok rute khusus Admin
 $routes->group('admin', function($routes) {
     $routes->get('dashboard', 'AdminController::index');
@@ -27,7 +30,10 @@ $routes->group('admin', function($routes) {
 });
 
 // Rute sementara untuk Guru & Siswa
-$routes->get('guru/dashboard', 'GuruController::index');
+$routes->get('admin/guru', 'AdminGuruController::index');
+$routes->post('admin/guru/store', 'AdminGuruController::store');
+$routes->post('admin/guru/update', 'AdminGuruController::update');
+$routes->get('admin/guru/delete/(:num)', 'AdminGuruController::delete/$1');
 
 $routes->group('siswa', function($routes) {
     $routes->get('dashboard', 'SiswaController::index');
