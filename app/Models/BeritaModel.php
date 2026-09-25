@@ -8,8 +8,8 @@ class BeritaModel extends Model
 {
     protected $table            = 'berita';
     protected $primaryKey       = 'id';
-    protected $allowedFields    = ['judul', 'slug', 'kategori', 'konten', 'thumbnail', 'status', 'user_id'];
-    
+    protected $allowedFields = ['judul', 'slug', 'kategori', 'subteks', 'konten', 'thumbnail', 'status', 'user_id'];
+
     // Otomatis mengurus created_at dan updated_at
     protected $useTimestamps    = true;
     protected $dateFormat       = 'datetime';
@@ -26,9 +26,10 @@ class BeritaModel extends Model
                         ->findAll();
         }
 
+        // PERBAIKAN: Gunakan 'berita.slug' secara eksplisit
         return $this->select('berita.*, users.username as penulis')
                     ->join('users', 'users.id = berita.user_id', 'left')
-                    ->where(['slug' => $slug])
+                    ->where('berita.slug', $slug)
                     ->first();
     }
 }

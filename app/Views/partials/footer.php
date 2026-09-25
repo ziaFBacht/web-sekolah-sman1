@@ -5,7 +5,7 @@
             <div class="space-y-4">
                 <div class="flex items-center gap-3 text-white mb-6">
                     <img src="<?= base_url('assets/images/logo.png') ?>" class="w-10 h-10 object-contain">
-                    <span class="font-bold text-2xl">SMAN 1 SMG</span>
+                    <span class="font-bold text-2xl">SMA Negeri 1 Semarang</span>
                 </div>
                 <p class="text-sm text-gray-400 leading-relaxed">
                     Menghasilkan lulusan yang cerdas, kompetitif di era global, dan tetap menjunjung tinggi kearifan lokal.
@@ -16,10 +16,11 @@
             <div>
                 <h3 class="text-white font-semibold text-lg mb-6">Jelajahi</h3>
                 <ul class="space-y-3 text-sm">
-                    <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Sejarah Sekolah</a></li>
+                    <!-- li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Sejarah Sekolah</a></li-->
                     <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Direktori Guru & Staf</a></li>
                     <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Galeri Kegiatan</a></li>
                     <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Download Area</a></li>
+                     <li><a href="login" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Admin Page (Debug)</a></li>
                 </ul>
             </div>
 

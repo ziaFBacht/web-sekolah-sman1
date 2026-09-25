@@ -11,6 +11,7 @@ $routes->get('logout', 'AuthController::logout');
 
 $routes->get('/profil', 'Home::profil');
 $routes->get('/berita', 'Home::berita');
+$routes->get('berita/baca/(:any)', 'Home::baca/$1');
 
 // Kelompok rute khusus Admin
 $routes->group('admin', function($routes) {
@@ -34,6 +35,11 @@ $routes->get('admin/guru', 'AdminGuruController::index');
 $routes->post('admin/guru/store', 'AdminGuruController::store');
 $routes->post('admin/guru/update', 'AdminGuruController::update');
 $routes->get('admin/guru/delete/(:num)', 'AdminGuruController::delete/$1');
+
+$routes->get('admin/berita', 'AdminBeritaController::index');
+$routes->post('admin/berita/store', 'AdminBeritaController::store');
+$routes->post('admin/berita/update', 'AdminBeritaController::update');
+$routes->get('admin/berita/delete/(:num)', 'AdminBeritaController::delete/$1');
 
 $routes->group('siswa', function($routes) {
     $routes->get('dashboard', 'SiswaController::index');
