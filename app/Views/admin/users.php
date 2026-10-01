@@ -91,28 +91,15 @@
 
 <!-- MODAL TAMBAH AKUN -->
 <div id="modalTambah" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-    <div class="bg-white rounded-xl w-full max-w-md p-6">
+    <div class="bg-white rounded-xl w-full max-w-md p-6 overflow-visible"> <!-- overflow-visible penting untuk dropdown autocomplete -->
         <h3 class="text-xl font-bold mb-4">Buat Akun Baru</h3>
 
         <form action="<?= base_url('admin/users/store') ?>" method="POST" class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Username</label>
-                <input type="text" name="username" required class="w-full border rounded px-3 py-2">
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold mb-1">NIP/NISN</label>
-                <input type="text" name="nisn" required class="w-full border rounded px-3 py-2">
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold mb-1">Password</label>
-                <input type="password" name="password" required class="w-full border rounded px-3 py-2">
-            </div>
-
+            
+            <!-- Role dipindah ke atas -->
             <div>
                 <label class="block text-sm font-semibold mb-1">Role/Hak Akses</label>
-                <select name="role" required class="w-full border rounded px-3 py-2">
+                <select name="role" id="tambahRole" required class="w-full border rounded px-3 py-2 bg-gray-50 focus:ring focus:ring-blue-200 transition">
                     <option value="siswa">Siswa</option>
                     <option value="guru">Guru</option>
                     <option value="admin">Administrator</option>
@@ -120,12 +107,34 @@
             </div>
 
             <div>
+                <label class="block text-sm font-semibold mb-1">Username</label>
+                <input type="text" name="username" required class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200">
+            </div>
+
+            <!-- Input NISN/NIP dengan Container Relatif untuk Autocomplete -->
+            <div id="containerNomorInduk" class="relative">
+                <label id="labelNomorInduk" class="block text-sm font-semibold mb-1">NISN Siswa</label>
+                <input type="text" name="nisn" id="inputNomorInduk" required class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200" placeholder="Ketik nomor induk..." autocomplete="off">
+                
+                <!-- Dropdown Sugesti Autocomplete -->
+                <ul id="autocompleteResults" class="absolute z-50 w-full bg-white border border-gray-300 rounded-b shadow-lg hidden max-h-48 overflow-y-auto mt-1">
+                    <!-- Item akan di-generate via JS -->
+                </ul>
+                <p id="helpNomorInduk" class="text-xs text-gray-500 mt-1">Ketik minimal 2 angka untuk mencari data.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1">Password</label>
+                <input type="password" name="password" required class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200">
+            </div>
+
+            <div>
                 <label class="block text-sm font-semibold mb-1">Email (Opsional)</label>
-                <input type="email" name="email" class="w-full border rounded px-3 py-2">
+                <input type="email" name="email" class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200">
             </div>
 
             <div class="flex justify-end space-x-2 mt-6">
-                <button type="button" onclick="document.getElementById('modalTambah').classList.add('hidden')" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">
+                <button type="button" onclick="closeModalTambah()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">
                     Batal
                 </button>
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold">
@@ -212,6 +221,96 @@
             }
         });
     }
+
+    function closeModalTambah() {
+        document.getElementById('modalTambah').classList.add('hidden');
+        document.getElementById('autocompleteResults').classList.add('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectRole = document.getElementById('tambahRole');
+        const labelNomorInduk = document.getElementById('labelNomorInduk');
+        const inputNomorInduk = document.getElementById('inputNomorInduk');
+        const containerNomorInduk = document.getElementById('containerNomorInduk');
+        const autocompleteResults = document.getElementById('autocompleteResults');
+        let timeoutId;
+
+        // 1. Mengubah Label berdasarkan Role
+        selectRole.addEventListener('change', function() {
+            inputNomorInduk.value = ''; // Reset input
+            autocompleteResults.classList.add('hidden'); // Sembunyikan hasil
+            
+            if (this.value === 'admin') {
+                containerNomorInduk.style.display = 'none'; // Admin tidak perlu NIP/NISN
+                inputNomorInduk.removeAttribute('required');
+            } else {
+                containerNomorInduk.style.display = 'block';
+                inputNomorInduk.setAttribute('required', 'required');
+                
+                if (this.value === 'guru') {
+                    labelNomorInduk.textContent = 'NIP Guru';
+                } else {
+                    labelNomorInduk.textContent = 'NISN Siswa';
+                }
+            }
+        });
+
+        // 2. Logika Autocomplete
+        inputNomorInduk.addEventListener('input', function() {
+            clearTimeout(timeoutId);
+            const keyword = this.value.trim();
+            const role = selectRole.value;
+
+            // Jangan cari jika role admin atau ketikan kurang dari 2 karakter
+            if (role === 'admin' || keyword.length < 2) {
+                autocompleteResults.classList.add('hidden');
+                return;
+            }
+
+            // Delay 300ms agar tidak spam request ke server setiap kali ngetik
+            timeoutId = setTimeout(() => {
+                fetch(`<?= base_url('admin/users/searchNomorInduk') ?>?q=${keyword}&role=${role}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        autocompleteResults.innerHTML = '';
+                        
+                        if (data.length > 0) {
+                            data.forEach(item => {
+                                const li = document.createElement('li');
+                                li.className = 'px-4 py-2 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 text-sm';
+                                // Menampilkan "Nomor Induk - Nama"
+                                li.innerHTML = `<span class="font-bold text-gray-800">${item.id}</span> <br> <span class="text-gray-500 text-xs">${item.nama}</span>`;
+                                
+                                // Jika di-klik, masukkan id (NISN/NIP) ke input
+                                li.addEventListener('click', function() {
+                                    inputNomorInduk.value = item.id;
+                                    autocompleteResults.classList.add('hidden');
+                                });
+                                
+                                autocompleteResults.appendChild(li);
+                            });
+                            autocompleteResults.classList.remove('hidden');
+                        } else {
+                            const li = document.createElement('li');
+                            li.className = 'px-4 py-3 text-sm text-red-500 italic text-center';
+                            li.textContent = 'Data tidak ditemukan atau akun sudah dibuat.';
+                            autocompleteResults.appendChild(li);
+                            autocompleteResults.classList.remove('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            }, 300);
+        });
+
+        // 3. Sembunyikan dropdown jika klik di luar area
+        document.addEventListener('click', function(event) {
+            if (!containerNomorInduk.contains(event.target)) {
+                autocompleteResults.classList.add('hidden');
+            }
+        });
+    });
 
     document.getElementById('searchUser').addEventListener('keyup', filterUsers);
     document.getElementById('filterRole').addEventListener('change', filterUsers);

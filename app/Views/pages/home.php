@@ -71,77 +71,71 @@
         <!-- Grid Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            <!-- Card 1: Pengumuman Penting (Highlight) -->
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-2 flex flex-col group">
-                <div class="relative h-52 bg-gray-200 overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop" alt="Placeholder" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
-                    <div class="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2">
-                        <i class="fas fa-bell"></i> Pengumuman
-                    </div>
+            <?php if(empty($berita_terbaru)): ?>
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-10 text-gray-500">
+                    Belum ada kabar atau agenda terbaru saat ini.
                 </div>
-                <div class="p-6 flex-grow flex flex-col">
-                    <div class="text-sm text-gray-500 mb-3 flex items-center gap-2">
-                        <i class="far fa-calendar-alt text-primary"></i> 18 September 2026
+            <?php else: ?>
+                <?php foreach($berita_terbaru as $row): ?>
+                    <?php 
+                        // Menentukan warna dan icon badge berdasarkan kategori (Opsional)
+                        $badgeClass = 'bg-blue-500 text-white';
+                        $iconClass = 'fas fa-newspaper';
+                        $kategori = strtolower($row['kategori']);
+                        
+                        if ($kategori == 'pengumuman') {
+                            $badgeClass = 'bg-red-500 text-white';
+                            $iconClass = 'fas fa-bell';
+                        } elseif ($kategori == 'prestasi') {
+                            $badgeClass = 'bg-primary text-white'; // Sesuaikan class bg-primary Anda
+                            $iconClass = 'fas fa-trophy';
+                        } elseif ($kategori == 'kegiatan' || $kategori == 'agenda') {
+                            $badgeClass = 'bg-secondary text-gray-900'; // Sesuaikan class bg-secondary Anda
+                            $iconClass = 'fas fa-calendar-check';
+                        }
+                    ?>
+                    
+                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-2 flex flex-col group">
+                        <div class="relative h-52 bg-gray-200 overflow-hidden">
+                            <!-- Menampilkan Gambar -->
+                            <?php if(!empty($row['thumbnail'])): ?>
+                                <img src="<?= base_url('uploads/berita/' . $row['thumbnail']) ?>" alt="<?= esc($row['judul']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                            <?php else: ?>
+                                <div class="w-full h-full flex items-center justify-center bg-gray-300 text-gray-500">
+                                    <i class="fas fa-image text-4xl"></i>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <!-- Badge Kategori Dinamis -->
+                            <div class="absolute top-4 left-4 <?= $badgeClass ?> text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2">
+                                <i class="<?= $iconClass ?>"></i> <?= esc($row['kategori']) ?>
+                            </div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="text-sm text-gray-500 mb-3 flex items-center gap-2">
+                                <!-- Format Tanggal -->
+                                <i class="far fa-calendar-alt text-primary"></i> <?= date('d F Y', strtotime($row['created_at'])) ?>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 hover:text-primary transition">
+                                <!-- Judul Dinamis -->
+                                <?= esc($row['judul']) ?>
+                            </h3>
+                            <p class="text-gray-600 mb-6 line-clamp-3 text-sm flex-grow leading-relaxed">
+                                <!-- Subteks Dinamis (Jika subteks kosong, ambil dari konten) -->
+                                <?php 
+                                    if(!empty($row['subteks'])) {
+                                        echo esc($row['subteks']);
+                                    }
+                                ?>
+                            </p>
+                            <!-- Link ke Detail Berita -->
+                            <a href="<?= base_url('berita/baca/' . $row['id']) ?>" class="mt-auto text-primary font-semibold hover:text-blue-800 flex items-center transition">
+                                Baca Detail <i class="fas fa-chevron-right ml-2 text-xs"></i>
+                            </a>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 hover:text-primary transition">
-                        [Placeholder] Pendaftaran Ujian Tengah Semester Ganjil TA 2026/2027
-                    </h3>
-                    <p class="text-gray-600 mb-6 line-clamp-3 text-sm flex-grow leading-relaxed">
-                        [Placeholder] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                    </p>
-                    <a href="#" class="mt-auto text-primary font-semibold hover:text-blue-800 flex items-center transition">
-                        Baca Detail <i class="fas fa-chevron-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Card 2: Berita / Prestasi -->
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-2 flex flex-col group">
-                <div class="relative h-52 bg-gray-200 overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop" alt="Placeholder" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
-                    <div class="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2">
-                        <i class="fas fa-trophy"></i> Prestasi
-                    </div>
-                </div>
-                <div class="p-6 flex-grow flex flex-col">
-                    <div class="text-sm text-gray-500 mb-3 flex items-center gap-2">
-                        <i class="far fa-calendar-alt text-primary"></i> 15 September 2026
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 hover:text-primary transition">
-                        [Placeholder] Tim Robotik SMAN 1 Raih Juara Umum Tingkat Nasional
-                    </h3>
-                    <p class="text-gray-600 mb-6 line-clamp-3 text-sm flex-grow leading-relaxed">
-                        [Placeholder] Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-                    </p>
-                    <a href="#" class="mt-auto text-primary font-semibold hover:text-blue-800 flex items-center transition">
-                        Baca Detail <i class="fas fa-chevron-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Card 3: Agenda Kegiatan -->
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-2 flex flex-col group">
-                <div class="relative h-52 bg-gray-200 overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=800&auto=format&fit=crop" alt="Placeholder" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
-                    <div class="absolute top-4 left-4 bg-secondary text-gray-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-2">
-                        <i class="fas fa-calendar-check"></i> Agenda
-                    </div>
-                </div>
-                <div class="p-6 flex-grow flex flex-col">
-                    <div class="text-sm text-gray-500 mb-3 flex items-center gap-2">
-                        <i class="far fa-calendar-alt text-primary"></i> 20 - 25 September 2026
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 hover:text-primary transition">
-                        [Placeholder] Perkemahan Jumat Sabtu Minggu (Perjusami) Kelas X
-                    </h3>
-                    <p class="text-gray-600 mb-6 line-clamp-3 text-sm flex-grow leading-relaxed">
-                        [Placeholder] Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore.
-                    </p>
-                    <a href="#" class="mt-auto text-primary font-semibold hover:text-blue-800 flex items-center transition">
-                        Baca Detail <i class="fas fa-chevron-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
             
         </div>
 

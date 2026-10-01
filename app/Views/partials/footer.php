@@ -20,7 +20,7 @@
                     <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Direktori Guru & Staf</a></li>
                     <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Galeri Kegiatan</a></li>
                     <li><a href="#" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Download Area</a></li>
-                     <li><a href="login" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Admin Page (Debug)</a></li>
+                     <li><a href="<?= base_url('/login') ?>" class="hover:text-secondary transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-primary"></i> Admin Page (Debug)</a></li>
                 </ul>
             </div>
 

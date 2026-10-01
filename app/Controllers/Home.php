@@ -6,8 +6,19 @@ class Home extends BaseController
 {
     public function index(): string
     {
-        // return view('welcome_message');
-        return view('pages/home');
+        // Memanggil model berita
+        $beritaModel = new \App\Models\BeritaModel();
+        
+        // Mengambil 3 berita terbaru dengan status 'published'
+        $data = [
+            'berita_terbaru' => $beritaModel->where('status', 'published')
+                                            ->orderBy('created_at', 'DESC')
+                                            ->limit(3)
+                                            ->findAll()
+        ];
+
+        // Mengirimkan data ke view pages/home
+        return view('pages/home', $data);
     }
 
     public function profil()

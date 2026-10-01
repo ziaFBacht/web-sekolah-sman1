@@ -20,7 +20,7 @@
         </div>
         <div>
             <p class="text-sm text-gray-500 font-semibold mb-1">Total Guru</p>
-            <p class="text-2xl font-bold text-gray-800">belum</p>
+            <p class="text-2xl font-bold text-gray-800"><?= number_format($total_guru, 0, ',', '.') ?></p>
         </div>
     </div>
     

@@ -41,6 +41,8 @@ $routes->post('admin/berita/store', 'AdminBeritaController::store');
 $routes->post('admin/berita/update', 'AdminBeritaController::update');
 $routes->get('admin/berita/delete/(:num)', 'AdminBeritaController::delete/$1');
 
+$routes->get('admin/users/searchNomorInduk', 'AdminController::searchNomorInduk');
+
 $routes->group('siswa', function($routes) {
     $routes->get('dashboard', 'SiswaController::index');
 });
