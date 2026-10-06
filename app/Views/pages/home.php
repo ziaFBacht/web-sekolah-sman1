@@ -9,7 +9,6 @@
     <div class="absolute inset-0 z-0">
         <video autoplay loop muted playsinline class="w-full h-full object-cover pointer-events-none">
             <source src="<?= base_url('assets/videos/hero-bg.mp4') ?>" type="video/mp4">
-            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop" alt="Background Sekolah" class="w-full h-full object-cover" />
         </video>
         
         <!-- Overlay hitam dengan opacity 70% agar video gelap dan teks menonjol -->

@@ -9,7 +9,6 @@
         </div>
         <div>
             <p class="text-sm text-gray-500 font-semibold mb-1">Total Siswa</p>
-            <!-- Tampilkan variabel total_siswa -->
             <p class="text-2xl font-bold text-gray-800"><?= number_format($total_siswa, 0, ',', '.') ?></p>
         </div>
     </div>
@@ -110,7 +109,7 @@
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <!-- Empty State Modern -->
+                    <!-- Empty State -->
                     <tr>
                         <td colspan="4" class="px-6 py-16 text-center">
                             <div class="inline-flex flex-col items-center justify-center text-gray-400">

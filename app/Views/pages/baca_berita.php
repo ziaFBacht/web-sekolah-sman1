@@ -4,18 +4,6 @@
 
 <?= $this->section('content') ?>
 
-<!-- Custom CSS untuk merapikan hasil dari Rich Text Editor -->
-<style>
-    .konten-berita h2, .konten-berita h3 { font-weight: bold; color: #1e293b; margin-top: 1.5em; margin-bottom: 0.5em; }
-    .konten-berita h2 { font-size: 1.5rem; }
-    .konten-berita h3 { font-size: 1.25rem; }
-    .konten-berita p { margin-bottom: 1.25em; line-height: 1.8; color: #475569; }
-    .konten-berita ul { list-style-type: disc; margin-left: 1.5em; margin-bottom: 1.25em; color: #475569; }
-    .konten-berita ol { list-style-type: decimal; margin-left: 1.5em; margin-bottom: 1.25em; color: #475569; }
-    .konten-berita a { color: #2563eb; text-decoration: underline; }
-    .konten-berita img { max-width: 100%; height: auto; border-radius: 0.5rem; margin-top: 1em; margin-bottom: 1em; }
-</style>
-
 <!-- Header Section: Judul diletakkan di dalam banner biru agar megah -->
 <div class="bg-blue-900 text-white pt-32 pb-20 relative overflow-hidden">
     <div class="container mx-auto px-6 max-w-5xl relative z-10">
@@ -44,7 +32,7 @@
 <div class="container mx-auto px-6 py-12 max-w-7xl -mt-10 relative z-20">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
-        <!-- KONTEN KIRI: Isi Berita -->
+        <!-- Kiri: Isi Berita -->
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10">
             
             <!-- Gambar Thumbnail Besar -->
@@ -54,9 +42,9 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Tempat Isi Berita (Ter-Render HTML-nya) -->
+            <!-- Tempat Isi Berita -->
             <div class="konten-berita text-lg">
-                <!-- INGAT: Jangan pakai esc() di sini karena akan merusak tag HTML editor -->
+                <!-- Jangan pakai esc() di sini karena akan merusak tag HTML editor -->
                 <?= $berita['konten'] ?>
             </div>
             
@@ -67,7 +55,7 @@
             </div>
         </div>
 
-        <!-- KONTEN KANAN: Sidebar -->
+        <!-- Kanan: Sidebar -->
         <div class="lg:col-span-1">
             
             <!-- Widget: Berita Terbaru -->
@@ -79,7 +67,7 @@
 
                 <div class="space-y-6">
                     <?php if(empty($beritaTerbaru)): ?>
-                        <p class="text-gray-500 text-sm">Belum ada berita lainnya.</p>
+                        <p class="text-gray-500 text-sm">Belum ada berita terbaru.</p>
                     <?php endif; ?>
 
                     <?php foreach($beritaTerbaru as $recent): ?>

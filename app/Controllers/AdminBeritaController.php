@@ -59,7 +59,7 @@ class AdminBeritaController extends BaseController
         // Simpan ke database
         $beritaModel->insert([
             'judul'     => $judul,
-            'slug'      => url_title($judul, '-', true) . '-' . time(), // Tambah time() agar slug selalu unik
+            'slug'      => url_title($judul, '-', true) . '-' . time(), // Slug + time() tetap dipertahankan untuk berita BARU saja
             'kategori'  => $this->request->getPost('kategori'),
             'subteks'   => $this->request->getPost('subteks'),
             'konten'    => $this->request->getPost('konten'),
@@ -99,7 +99,7 @@ class AdminBeritaController extends BaseController
 
         $beritaModel->update($id, [
             'judul'     => $judul,
-            'slug'      => url_title($judul, '-', true) . '-' . time(),
+            // HAPUS BARIS SLUG DI SINI AGAR URL TIDAK BERUBAH DAN TIDAK 404
             'kategori'  => $this->request->getPost('kategori'),
             'subteks'   => $this->request->getPost('subteks'),
             'konten'    => $this->request->getPost('konten'),
@@ -130,5 +130,24 @@ class AdminBeritaController extends BaseController
         }
 
         return redirect()->to('/admin/berita')->with('success', 'Berita berhasil dihapus.');
+    }
+    
+    public function uploadImage()
+    {
+        $file = $this->request->getFile('image');
+        
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            // Simpan gambar ke folder public/uploads/berita
+            $file->move('uploads/berita', $newName);
+            
+            // Kembalikan URL ke Javascript
+            return $this->response->setJSON([
+                'status' => 'success',
+                'url'    => base_url('uploads/berita/' . $newName)
+            ]);
+        }
+        
+        return $this->response->setJSON(['status' => 'error', 'message' => 'File tidak valid atau kosong'])->setStatusCode(400);
     }
 }

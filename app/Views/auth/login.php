@@ -2,8 +2,18 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Portal - SMAN 1 Semarang</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#1e3a8a', secondary: '#fbbf24' } } } }
+    </script>
+    
+    <!-- Font Awesome & Custom CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
 
@@ -35,9 +45,7 @@
             <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
                 Masuk
             </button>
-        </form>
-        
-        <p class="text-center text-xs text-gray-400 mt-6">Hanya Admin yang dapat membuat akun baru.</p>
+        </form>        
     </div>
 
 </body>

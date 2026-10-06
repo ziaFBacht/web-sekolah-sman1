@@ -27,7 +27,7 @@
             <i class="fas fa-chalkboard-teacher w-6 text-center mr-2"></i> Data Guru
         </a>
         <a href="<?= base_url('admin/berita') ?>" class="block py-2.5 px-4 rounded transition hover:bg-blue-800 hover:text-white text-blue-200">
-            <i class="fas fa-chalkboard-teacher w-6 text-center mr-2"></i> Berita
+            <i class="fas fa-newspaper w-6 text-center mr-2"></i> Berita
         </a>
     </nav>
 

@@ -40,6 +40,7 @@ $routes->get('admin/berita', 'AdminBeritaController::index');
 $routes->post('admin/berita/store', 'AdminBeritaController::store');
 $routes->post('admin/berita/update', 'AdminBeritaController::update');
 $routes->get('admin/berita/delete/(:num)', 'AdminBeritaController::delete/$1');
+$routes->post('admin/berita/uploadImage', 'AdminBeritaController::uploadImage');
 
 $routes->get('admin/users/searchNomorInduk', 'AdminController::searchNomorInduk');
 

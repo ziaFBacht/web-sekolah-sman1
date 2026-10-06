@@ -1,0 +1,38 @@
+/* Mengembalikan gaya dasar untuk dalam Editor Summernote dan Output Berita */
+.note-editable h1, .konten-berita h1 { font-size: 2.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; color: #1e293b; }
+.note-editable h2, .konten-berita h2 { font-size: 1.875rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; color: #1e293b; }
+.note-editable h3, .konten-berita h3 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; color: #1e293b; }
+.note-editable h4, .konten-berita h4 { font-size: 1.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; color: #1e293b; }
+
+.note-editable p, .konten-berita p { margin-bottom: 1.25em; line-height: 1.8; color: #475569; }
+
+/* Mengembalikan gaya List / Daftar */
+.note-editable ul, .konten-berita ul { list-style-type: disc; margin-left: 1.5em; padding-left: 0.5rem; margin-bottom: 1.25em; color: #475569; }
+.note-editable ol, .konten-berita ol { list-style-type: decimal; margin-left: 1.5em; padding-left: 0.5rem; margin-bottom: 1.25em; color: #475569; }
+.note-editable li, .konten-berita li { margin-bottom: 0.25rem; }
+
+/* Mengembalikan tebal/miring bawaan */
+.note-editable b, .note-editable strong, .konten-berita b, .konten-berita strong { font-weight: bold; }
+.note-editable i, .note-editable em, .konten-berita i, .konten-berita em { font-style: italic; }
+
+.note-editable blockquote, .konten-berita blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; color: #4b5563; font-style: italic; margin-bottom: 1rem; }
+.note-editable a, .konten-berita a { color: #2563eb; text-decoration: underline; }
+.note-editable img, .konten-berita img { max-width: 100%; height: auto; border-radius: 0.5rem; margin-top: 1em; margin-bottom: 1em; }
+
+/* Memperbaiki z-index dropdown & modal Summernote agar tidak tertutup elemen Tailwind */
+.note-editor .dropdown-toggle::after { all: unset; }
+.note-editor .note-dropdown-menu { box-sizing: content-box; }
+.note-editor .note-modal-footer { box-sizing: content-box; }
+.note-modal-backdrop { z-index: 40 !important; }
+.note-modal { z-index: 60 !important; }
+
+/* Fix Background Fullscreen Summernote */
+.note-editor.note-frame.fullscreen {
+    background-color: #ffffff !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1050 !important; /* Berada di atas modal Tailwind (z-50) */
+}
+.note-editor.note-frame.fullscreen .note-editing-area {
+    background-color: #ffffff !important;
+}

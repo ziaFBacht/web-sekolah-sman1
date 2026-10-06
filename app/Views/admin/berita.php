@@ -2,27 +2,6 @@
 
 <?= $this->section('content') ?>
 
-<!-- Custom CSS untuk mengatur tinggi minimal editor teks dan mengembalikan gaya dasar -->
-<style>
-    .ck-editor__editable_inline {
-        min-height: 250px;
-    }
-    
-    /* Mengembalikan gaya dasar untuk elemen di dalam CKEditor yang di-reset oleh Tailwind */
-    .ck-content h1 { font-size: 2.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; }
-    .ck-content h2 { font-size: 1.875rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; }
-    .ck-content h3 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; }
-    .ck-content h4 { font-size: 1.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; line-height: 1.2; }
-    
-    .ck-content ul { list-style-type: disc; padding-left: 2rem; margin-bottom: 1rem; }
-    .ck-content ol { list-style-type: decimal; padding-left: 2rem; margin-bottom: 1rem; }
-    .ck-content li { margin-bottom: 0.25rem; }
-    
-    .ck-content blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; color: #4b5563; font-style: italic; margin-bottom: 1rem; }
-    .ck-content p { margin-bottom: 1rem; }
-    .ck-content a { color: #2563eb; text-decoration: underline; }
-</style>
-
 <?php if(session()->getFlashdata('success')): ?>
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"><?= session()->getFlashdata('success') ?></div>
 <?php endif; ?>
@@ -95,17 +74,19 @@
                         <?php endif; ?>
                     </td>
                     <td class="px-6 py-4 text-center space-x-2 whitespace-nowrap">
-                        <button onclick="openEditModal(this)" 
+                        <textarea id="raw-konten-<?= $row['id'] ?>" class="hidden"><?= esc($row['konten']) ?></textarea>
+    
+                        <button onclick="openEditModal(this, <?= $row['id'] ?>)" 
                             data-id="<?= $row['id'] ?>"
-                            data-judul="<?= esc($row['judul']) ?>"
-                            data-kategori="<?= esc($row['kategori']) ?>"
-                            data-subteks="<?= esc($row['subteks']) ?>"
-                            data-status="<?= esc($row['status']) ?>"
-                            data-konten="<?= esc($row['konten']) ?>"
-                            data-thumb="<?= esc($row['thumbnail']) ?>"
+                            data-judul="<?= esc($row['judul'], 'attr') ?>"
+                            data-kategori="<?= esc($row['kategori'], 'attr') ?>"
+                            data-subteks="<?= esc($row['subteks'], 'attr') ?>"
+                            data-status="<?= esc($row['status'], 'attr') ?>"
+                            data-thumb="<?= esc($row['thumbnail'], 'attr') ?>"
                             class="text-blue-500 hover:text-blue-700 bg-white shadow-sm border p-2 rounded transition">
                             <i class="fas fa-edit"></i>
                         </button>
+                        
                         <a href="<?= base_url('admin/berita/delete/'.$row['id']) ?>" onclick="return confirm('Yakin ingin menghapus berita ini secara permanen?')" class="text-red-500 hover:text-red-700 bg-white shadow-sm border p-2 rounded transition">
                             <i class="fas fa-trash"></i>
                         </a>
@@ -122,7 +103,7 @@
     <div class="bg-white rounded-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
         <h3 class="text-xl font-bold mb-4 border-b pb-2">Manajemen Berita</h3>
         
-        <!-- AREA 1: Form Input Berita -->
+        <!-- Form Input Berita -->
         <div id="areaInput" class="bg-white max-w-4xl mx-auto">
             <h2 class="text-lg font-bold mb-4 text-gray-800">Tulis Berita Baru</h2>
             
@@ -166,10 +147,10 @@
                 <!-- Input Upload Gambar -->
                 <div>
                     <label for="inputGambar" class="block text-sm font-semibold mb-1">Thumbnail/Gambar Utama <span class="text-gray-400 text-xs font-normal">(Opsional)</span></label>
-                    <input type="file" name="gambar" id="inputGambar" class="w-full border rounded px-3 py-1.5 text-sm file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
+                    <input type="file" name="thumbnail" id="inputGambar" class="w-full border rounded px-3 py-1.5 text-sm file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
                 </div>
 
-                <!-- Input Konten (CKEditor) -->
+                <!-- Input Konten (Summernote) -->
                 <div>
                     <label for="editorTambah" class="block text-sm font-semibold mb-1">Isi Berita <span class="text-red-500">*</span></label>
                     <textarea name="konten" id="editorTambah" class="w-full border rounded"></textarea>
@@ -177,12 +158,10 @@
 
                 <!-- Tombol Aksi Tahap 1 -->
                 <div class="flex justify-between mt-6 pt-4 border-t">
-                    <!-- Tombol Batal/Keluar dari Modal -->
                     <button type="button" onclick="document.getElementById('modalTambah').classList.add('hidden')" class="px-4 py-2 text-gray-500 hover:bg-gray-100 border border-gray-300 rounded font-semibold transition">
                         Batal
                     </button>
                     
-                    <!-- Tombol menuju Preview -->
                     <button type="button" id="btnToPreview" class="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-6 rounded transition duration-200 flex items-center">
                         <i class="fas fa-eye mr-2"></i> Lihat Preview
                     </button>
@@ -190,50 +169,38 @@
             </form>
         </div>
 
-        <!-- AREA 2: Halaman Konfirmasi / Preview (Disembunyikan secara default) -->
+        <!-- Halaman Konfirmasi / Preview (Disembunyikan secara default) -->
         <div id="areaPreview" class="hidden bg-gray-50 p-2 rounded-lg border border-gray-200 max-w-4xl mx-auto">
             <div class="flex justify-between items-center mb-4 pb-2 border-b">
                 <h2 class="text-lg font-bold text-gray-800">Review Publikasi Berita</h2>
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">Mode Pratinjau</span>
             </div>
             
-            <!-- Tampilan Artikel Menyerupai Halaman Asli -->
             <div class="bg-white p-6 rounded shadow-sm border mb-6">
-                <!-- Kategori Preview -->
                 <div class="mb-3">
                     <span id="previewKategori" class="bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold px-2 py-1 rounded text-xs uppercase"></span>
                 </div>
 
-                <!-- Judul -->
                 <h1 id="previewJudul" class="text-2xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
-                
-                <!-- Subteks Preview -->
                 <p id="previewSubteks" class="text-gray-600 italic mb-4"></p>
                 
-                <!-- Meta -->
                 <div class="flex items-center text-xs text-gray-500 mb-6 border-b pb-4">
                     <span class="mr-4"><i class="far fa-calendar-alt mr-1"></i> <?= date('d M Y') ?></span>
                     <span><i class="far fa-user mr-1"></i> Administrator</span>
                 </div>
 
-                <!-- Gambar Utama (Disembunyikan jika kosong) -->
                 <div id="containerGambarPreview" class="w-full mb-6 rounded overflow-hidden flex justify-center hidden">
                     <img id="previewGambar" src="" alt="Thumbnail Berita" class="max-w-full h-auto max-h-[350px] object-contain">
                 </div>
                 
-                <!-- Konten (Render HTML dari CKEditor) -->
-                <!-- Penambahan kelas ck-content di sini -->
-                <div id="previewKonten" class="ck-content max-w-none text-gray-800 text-sm leading-relaxed text-justify"></div>
+                <div id="previewKonten" class="konten-berita max-w-none text-gray-800 text-sm leading-relaxed text-justify"></div>
             </div>
 
-            <!-- Tombol Aksi Tahap 2 -->
             <div class="flex justify-between items-center bg-gray-100 p-4 rounded border">
-                <!-- Tombol Kembali -->
                 <button type="button" id="btnBackToEdit" class="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-semibold py-2 px-4 rounded transition">
                     &larr; Kembali Edit
                 </button>
                 
-                <!-- Tombol Submit Sebenarnya -->
                 <button type="button" id="btnSubmitFinal" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow-sm transition flex items-center">
                     <i class="fas fa-paper-plane mr-2"></i> Simpan & Publikasikan
                 </button>
@@ -247,7 +214,6 @@
     <div class="bg-white rounded-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
         <h3 class="text-xl font-bold mb-4">Edit Berita</h3>
         
-        <!-- AREA 1 EDIT: Form Input -->
         <div id="areaInputEdit">
             <form id="formEditBerita" action="<?= base_url('admin/berita/update') ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
                 <input type="hidden" name="id" id="editId">
@@ -282,7 +248,6 @@
                     </div>
                 </div>
 
-                <!-- Input Subteks (Edit) -->
                 <div>
                     <label class="block text-sm font-semibold mb-1">Subteks Singkat <span class="text-gray-400 text-xs font-normal">(Opsional)</span></label>
                     <input type="text" name="subteks" id="editSubteks" class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200">
@@ -302,7 +267,6 @@
             </form>
         </div>
 
-        <!-- AREA 2 EDIT: Halaman Konfirmasi / Preview -->
         <div id="areaPreviewEdit" class="hidden bg-gray-50 p-2 rounded-lg border border-gray-200 max-w-4xl mx-auto mt-4">
             <div class="flex justify-between items-center mb-4 pb-2 border-b">
                 <h2 class="text-lg font-bold text-gray-800">Review Perubahan Berita</h2>
@@ -310,34 +274,25 @@
             </div>
             
             <div class="bg-white p-6 rounded shadow-sm border mb-6">
-                <!-- Kategori Preview -->
                 <div class="mb-3">
                     <span id="previewKategoriEdit" class="bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold px-2 py-1 rounded text-xs uppercase"></span>
                 </div>
 
-                <!-- Judul -->
                 <h1 id="previewJudulEdit" class="text-2xl font-extrabold text-gray-900 mb-2 leading-tight"></h1>
-                
-                <!-- Subteks Preview -->
                 <p id="previewSubteksEdit" class="text-gray-600 italic mb-4"></p>
                 
-                <!-- Meta -->
                 <div class="flex items-center text-xs text-gray-500 mb-6 border-b pb-4">
                     <span class="mr-4"><i class="far fa-calendar-alt mr-1"></i> <?= date('d M Y') ?> (Diedit)</span>
                     <span><i class="far fa-user mr-1"></i> Administrator</span>
                 </div>
 
-                <!-- Gambar Utama (Disembunyikan jika kosong) -->
                 <div id="containerGambarPreviewEdit" class="w-full mb-6 rounded overflow-hidden flex justify-center hidden">
                     <img id="previewGambarEdit" src="" alt="Thumbnail Berita" class="max-w-full h-auto max-h-[350px] object-contain">
                 </div>
                 
-                <!-- Konten (Render HTML dari CKEditor) -->
-                <!-- Penambahan kelas ck-content di sini juga -->
-                <div id="previewKontenEdit" class="ck-content max-w-none text-gray-800 text-sm leading-relaxed text-justify"></div>
+               <div id="previewKontenEdit" class="konten-berita max-w-none text-gray-800 text-sm leading-relaxed text-justify"></div>
             </div>
 
-            <!-- Tombol Aksi Tahap 2 Edit -->
             <div class="flex justify-between items-center bg-gray-100 p-4 rounded border">
                 <button type="button" id="btnBackToEditEdit" class="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-semibold py-2 px-4 rounded transition">
                     &larr; Kembali Edit
@@ -351,39 +306,101 @@
     </div>
 </div>
 
-<!-- Load CKEditor 5 melalui CDN -->
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<!-- Tambahan CSS Khusus Fullscreen Summernote -->
+<style>
+    .note-editor.note-frame.fullscreen {
+        background-color: #ffffff !important;
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 1050 !important;
+    }
+    .note-editor.note-frame.fullscreen .note-editing-area {
+        background-color: #ffffff !important;
+    }
+</style>
+
+<!-- Load Library jQuery & Summernote -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
 <script>
-    let editorTambahInstance;
-    let editorEditInstance;
+    // Fungsi Global untuk AJAX Upload Gambar (Tombol Picture)
+    function uploadImage(file, editor) {
+        let data = new FormData();
+        data.append("image", file);
+        
+        let csrfName = '<?= csrf_token() ?>';
+        let csrfHash = '<?= csrf_hash() ?>';
+        data.append(csrfName, csrfHash);
 
-    // Inisialisasi CKEditor untuk Modal Tambah
-    ClassicEditor
-        .create(document.querySelector('#editorTambah'), {
-            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo' ]
-        })
-        .then(editor => {
-            editorTambahInstance = editor;
-        })
-        .catch(error => {
-            console.error(error);
+        $.ajax({
+            url: "<?= base_url('admin/berita/uploadImage') ?>",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: data,
+            type: "POST",
+            dataType: "json",
+            success: function(response) {
+                if(response && response.url) {
+                    $(editor).summernote('insertImage', response.url);
+                } else {
+                    alert("Gagal membaca URL gambar.");
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error Detail:", jqXHR.responseText);
+                alert("Upload gambar gagal! Cek console (F12) untuk detailnya.");
+            }
         });
+    }
 
-    // Inisialisasi CKEditor untuk Modal Edit
-    ClassicEditor
-        .create(document.querySelector('#editorEdit'), {
-            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo' ]
-        })
-        .then(editor => {
-            editorEditInstance = editor;
-        })
-        .catch(error => {
-            console.error(error);
+    // Fungsi Pembersih Sampah Variabel Tailwind dengan DOM Parser
+    function cleanSummernoteHTML(html) {
+        if (!html) return '';
+        let tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        let elements = tempDiv.getElementsByTagName('*');
+        for (let i = 0; i < elements.length; i++) {
+            let el = elements[i];
+            if (el.hasAttribute('style')) {
+                let styleStr = el.getAttribute('style');
+                let cleanStyle = styleStr.replace(/--tw-[a-zA-Z0-9\-]+:\s*[^;]+;?\s*/g, '').trim();
+                if (cleanStyle === '') {
+                    el.removeAttribute('style');
+                } else {
+                    el.setAttribute('style', cleanStyle);
+                }
+            }
+        }
+        return tempDiv.innerHTML;
+    }
+
+    // Inisialisasi Summernote
+    $(document).ready(function() {
+        $('#editorTambah, #editorEdit').summernote({
+            height: 300,
+            dialogsInBody: true,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture']],
+                ['view', ['fullscreen', 'codeview']]
+            ],
+            callbacks: {
+                onImageUpload: function(files) {
+                    for (let i = 0; i < files.length; i++) {
+                        uploadImage(files[i], this);
+                    }
+                }
+            }
         });
+    });
 
     // Fungsi Ekstraksi Data ke Modal Edit
-    function openEditModal(btn) {
+    function openEditModal(btn, id) {
         document.getElementById('editId').value = btn.getAttribute('data-id');
         document.getElementById('editJudul').value = btn.getAttribute('data-judul');
         document.getElementById('editKategori').value = btn.getAttribute('data-kategori');
@@ -391,14 +408,11 @@
         document.getElementById('editStatus').value = btn.getAttribute('data-status');
         document.getElementById('editOldThumb').value = btn.getAttribute('data-thumb');
         
-        // Memasukkan konten HTML dari database ke dalam CKEditor
-        let konten = btn.getAttribute('data-konten');
-        editorEditInstance.setData(konten);
+        let konten = document.getElementById('raw-konten-' + id).value;
+        $('#editorEdit').summernote('code', konten);
         
-        // Pastikan kembali ke mode form (bukan preview) saat modal dibuka kembali
         document.getElementById('areaPreviewEdit').classList.add('hidden');
         document.getElementById('areaInputEdit').classList.remove('hidden');
-
         document.getElementById('modalEdit').classList.remove('hidden');
     }
 
@@ -411,10 +425,8 @@
         rows.forEach(row => {
             let text = row.innerText.toLowerCase();
             let kategori = row.querySelector('.col-kategori').innerText.toLowerCase();
-
             let matchSearch = text.includes(search);
             let matchKategori = filterKategori === "" || kategori.includes(filterKategori);
-
             row.style.display = (matchSearch && matchKategori) ? '' : 'none';
         });
     }
@@ -422,53 +434,61 @@
     document.getElementById('searchBerita').addEventListener('keyup', filterBerita);
     document.getElementById('filterKategori').addEventListener('change', filterBerita);
 
-    // --- LOGIKA MULTI-STEP FORM (PREVIEW) UNTUK TAMBAH ---
+    // --- LOGIKA MULTI-STEP FORM (PREVIEW) ---
     document.addEventListener('DOMContentLoaded', function() {
+        // [Variabel Tambah]
         const areaInput = document.getElementById('areaInput');
         const areaPreview = document.getElementById('areaPreview');
         const formBerita = document.getElementById('formBerita');
-
         const inputJudul = document.getElementById('inputJudul');
         const inputKategori = document.getElementById('inputKategori');
         const inputSubteks = document.getElementById('inputSubteks');
         const inputGambar = document.getElementById('inputGambar');
-
         const previewJudul = document.getElementById('previewJudul');
         const previewKategori = document.getElementById('previewKategori');
         const previewSubteks = document.getElementById('previewSubteks');
         const previewKonten = document.getElementById('previewKonten');
         const containerGambarPreview = document.getElementById('containerGambarPreview');
         const previewGambar = document.getElementById('previewGambar');
-
         const btnToPreview = document.getElementById('btnToPreview');
         const btnBackToEdit = document.getElementById('btnBackToEdit');
         const btnSubmitFinal = document.getElementById('btnSubmitFinal');
 
+        // [Variabel Edit]
+        const areaInputEdit = document.getElementById('areaInputEdit');
+        const areaPreviewEdit = document.getElementById('areaPreviewEdit');
+        const formEditBerita = document.getElementById('formEditBerita');
+        const editJudul = document.getElementById('editJudul');
+        const editKategori = document.getElementById('editKategori');
+        const editSubteks = document.getElementById('editSubteks');
+        const editGambar = document.getElementById('editGambar');
+        const editOldThumb = document.getElementById('editOldThumb');
+        const previewJudulEdit = document.getElementById('previewJudulEdit');
+        const previewKategoriEdit = document.getElementById('previewKategoriEdit');
+        const previewSubteksEdit = document.getElementById('previewSubteksEdit');
+        const previewKontenEdit = document.getElementById('previewKontenEdit');
+        const containerGambarPreviewEdit = document.getElementById('containerGambarPreviewEdit');
+        const previewGambarEdit = document.getElementById('previewGambarEdit');
+        const btnToPreviewEdit = document.getElementById('btnToPreviewEdit');
+        const btnBackToEditEdit = document.getElementById('btnBackToEditEdit');
+        const btnSubmitFinalEdit = document.getElementById('btnSubmitFinalEdit');
+
         // Aksi menuju Preview Tambah
         btnToPreview.addEventListener('click', function() {
-            // Validasi Input HTML5 Sederhana
             if (!inputJudul.value || !inputKategori.value) {
-                formBerita.reportValidity();
-                return;
+                formBerita.reportValidity(); return;
             }
-
-            // Ambil data dari CKEditor 5
-            const kontenHTML = editorTambahInstance.getData();
+            let kontenHTML = cleanSummernoteHTML($('#editorTambah').summernote('code'));
+            $('#editorTambah').summernote('code', kontenHTML); 
             
-            // Validasi Konten Kosong
             const cleanText = kontenHTML.replace(/(<([^>]+)>)/gi, "").trim();
-            if (cleanText === '') {
-                alert("Isi berita tidak boleh kosong!");
-                return;
-            }
+            if (cleanText === '') { alert("Isi berita tidak boleh kosong!"); return; }
 
-            // Set Data ke Preview
             previewJudul.textContent = inputJudul.value;
             previewKategori.textContent = inputKategori.options[inputKategori.selectedIndex].text;
             previewSubteks.textContent = inputSubteks.value;
             previewKonten.innerHTML = kontenHTML;
 
-            // Penanganan Gambar Opsional
             const file = inputGambar.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -482,76 +502,44 @@
                 containerGambarPreview.classList.add('hidden');
             }
 
-            // Transisi Tampilan
             areaInput.classList.add('hidden');
             areaPreview.classList.remove('hidden');
-            
-            // Scroll sedikit ke atas modal agar rapi
             document.querySelector('#modalTambah > div').scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Aksi Kembali Edit (Tambah)
         btnBackToEdit.addEventListener('click', function() {
             areaPreview.classList.add('hidden');
             areaInput.classList.remove('hidden');
-            document.querySelector('#modalTambah > div').scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // Aksi Simpan Final (Tambah)
         btnSubmitFinal.addEventListener('click', function() {
+            let finalHTML = cleanSummernoteHTML($('#editorTambah').summernote('code'));
+            $('#editorTambah').val(finalHTML); 
+
             this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
             this.classList.add('opacity-75', 'cursor-not-allowed');
             this.disabled = true;
             formBerita.submit();
         });
 
-        // --- LOGIKA MULTI-STEP FORM (PREVIEW) UNTUK EDIT ---
-        const areaInputEdit = document.getElementById('areaInputEdit');
-        const areaPreviewEdit = document.getElementById('areaPreviewEdit');
-        const formEditBerita = document.getElementById('formEditBerita');
-
-        const editJudul = document.getElementById('editJudul');
-        const editKategori = document.getElementById('editKategori');
-        const editSubteks = document.getElementById('editSubteks');
-        const editGambar = document.getElementById('editGambar');
-        const editOldThumb = document.getElementById('editOldThumb'); // Untuk mendapatkan gambar lama
-
-        const previewJudulEdit = document.getElementById('previewJudulEdit');
-        const previewKategoriEdit = document.getElementById('previewKategoriEdit');
-        const previewSubteksEdit = document.getElementById('previewSubteksEdit');
-        const previewKontenEdit = document.getElementById('previewKontenEdit');
-        const containerGambarPreviewEdit = document.getElementById('containerGambarPreviewEdit');
-        const previewGambarEdit = document.getElementById('previewGambarEdit');
-
-        const btnToPreviewEdit = document.getElementById('btnToPreviewEdit');
-        const btnBackToEditEdit = document.getElementById('btnBackToEditEdit');
-        const btnSubmitFinalEdit = document.getElementById('btnSubmitFinalEdit');
-
         // Aksi menuju Preview Edit
         btnToPreviewEdit.addEventListener('click', function() {
-            // Validasi Input
             if (!editJudul.value || !editKategori.value) {
-                formEditBerita.reportValidity();
-                return;
+                formEditBerita.reportValidity(); return;
             }
-
-            // Ambil data dari CKEditor Edit
-            const kontenHTMLEdit = editorEditInstance.getData();
             
-            // Validasi Konten Kosong
+            let kontenHTMLEdit = cleanSummernoteHTML($('#editorEdit').summernote('code'));
+            $('#editorEdit').summernote('code', kontenHTMLEdit); 
+            
             const cleanTextEdit = kontenHTMLEdit.replace(/(<([^>]+)>)/gi, "").trim();
-            if (cleanTextEdit === '') {
-                alert("Isi berita tidak boleh kosong!");
-                return;
-            }
+            if (cleanTextEdit === '') { alert("Isi berita tidak boleh kosong!"); return; }
 
-            // Set Data ke Preview
             previewJudulEdit.textContent = editJudul.value;
             previewKategoriEdit.textContent = editKategori.options[editKategori.selectedIndex].text;
             previewSubteksEdit.textContent = editSubteks.value;
             previewKontenEdit.innerHTML = kontenHTMLEdit;
 
-            // Logika pratinjau gambar: prioritas pada file baru, jika tidak, gunakan gambar lama
             const fileEdit = editGambar.files[0];
             if (fileEdit) {
                 const reader = new FileReader();
@@ -561,7 +549,6 @@
                 }
                 reader.readAsDataURL(fileEdit);
             } else if (editOldThumb.value) {
-                 // Jika tidak ada gambar baru yang diunggah, tampilkan gambar yang sudah ada
                 previewGambarEdit.src = "<?= base_url('uploads/berita/') ?>" + editOldThumb.value;
                 containerGambarPreviewEdit.classList.remove('hidden');
             } else {
@@ -569,23 +556,21 @@
                 containerGambarPreviewEdit.classList.add('hidden');
             }
 
-            // Transisi Tampilan
             areaInputEdit.classList.add('hidden');
             areaPreviewEdit.classList.remove('hidden');
-            
-            // Scroll ke atas
             document.querySelector('#modalEdit > div').scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Aksi Kembali Edit (Edit)
         btnBackToEditEdit.addEventListener('click', function() {
             areaPreviewEdit.classList.add('hidden');
             areaInputEdit.classList.remove('hidden');
-            document.querySelector('#modalEdit > div').scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // Aksi Simpan Final (Edit)
         btnSubmitFinalEdit.addEventListener('click', function() {
+            let finalHTML = cleanSummernoteHTML($('#editorEdit').summernote('code'));
+            $('#editorEdit').val(finalHTML); 
+
             this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
             this.classList.add('opacity-75', 'cursor-not-allowed');
             this.disabled = true;

@@ -131,6 +131,10 @@ public/assets/videos/*
 # Abaikan semua file gambar di folder assets
 public/assets/images/*
 
+# Abaikan semua file gambar di folder berita
+public/uploads/*
+
 # PENGECUALIAN: Jangan abaikan file .gitkeep (agar struktur foldernya tetap ter-upload ke Git)
 !public/assets/videos/.gitkeep
 !public/assets/images/.gitkeep
+!public/uploads/.gitkeep
