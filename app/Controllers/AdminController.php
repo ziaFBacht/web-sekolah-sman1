@@ -23,23 +23,75 @@ class AdminController extends BaseController
             return redirect()->to('/login');
         }
 
-        // Panggil model yang dibutuhkan
         $siswaModel = new \App\Models\SiswaModel();
-        $userModel = new \App\Models\UserModel();
-        $guruModel = new \App\Models\GuruModel();
+        $userModel  = new \App\Models\UserModel();
+        $guruModel  = new \App\Models\GuruModel();
 
-        // JIKA Anda memiliki GuruModel khusus terpisah (seperti SiswaModel), 
-        // Anda bisa mengaktifkan baris di bawah ini dan menyesuaikan variabelnya:
-        // $guruModel = new \App\Models\GuruModel();
+        // Tangkap parameter filter dari URL
+        $search       = $this->request->getGet('search');
+        $action       = $this->request->getGet('action');
+        $table        = $this->request->getGet('table');
+        $dateOperator = $this->request->getGet('date_operator'); // before, exact, after
+        $dateValue    = $this->request->getGet('date_value');    // Format: YYYY-MM-DD
+
+        // Mulai susun query
+        $logQuery = $this->auditLog->select('audit_logs.*, users.username')
+                                   ->join('users', 'users.id = audit_logs.user_id', 'left');
+
+        // Terapkan Filter Teks & Dropdown
+        if (!empty($search)) {
+            $logQuery->groupStart()
+                     ->like('audit_logs.record_name', $search)
+                     ->orLike('users.username', $search)
+                     ->groupEnd();
+        }
+
+        if (!empty($action)) {
+            $logQuery->where('audit_logs.action', $action);
+        }
+
+        if (!empty($table)) {
+            $logQuery->where('audit_logs.table_name', $table);
+        }
+
+        // Terapkan Filter Tanggal Spesifik
+        if (!empty($dateValue)) {
+            if ($dateOperator === 'before') {
+                // Sebelum tanggal (hingga 23:59:59 hari sebelumnya)
+                $logQuery->where('audit_logs.created_at <', $dateValue . ' 00:00:00');
+            } elseif ($dateOperator === 'after') {
+                // Setelah tanggal (mulai 00:00:00 hari berikutnya)
+                $logQuery->where('audit_logs.created_at >', $dateValue . ' 23:59:59');
+            } else {
+                // Tepat pada tanggal yang dipilih (00:00:00 s.d. 23:59:59)
+                $logQuery->groupStart()
+                         ->where('audit_logs.created_at >=', $dateValue . ' 00:00:00')
+                         ->where('audit_logs.created_at <=', $dateValue . ' 23:59:59')
+                         ->groupEnd();
+            }
+        }
+
+        // Urutan default selalu terbaru di atas
+        $logQuery->orderBy('audit_logs.created_at', 'DESC');
 
         $data = [
             'title'       => 'Dashboard Admin',
             'username'    => session()->get('username'),
-            'total_siswa' => $siswaModel->countAllResults(), // Menghitung semua baris di tabel siswa
-            'total_guru'  => $guruModel->countAllResults(), // Menghitung semua baris di tabel guru
-            'total_admin' => $userModel->where('role', 'admin')->countAllResults(), // Menghitung user dengan role admin
+            'total_siswa' => $siswaModel->countAllResults(), 
+            'total_guru'  => $guruModel->countAllResults(), 
+            'total_admin' => $userModel->where('role', 'admin')->countAllResults(),
                         
-            'logs'        => $this->auditLog->getLatestLogs(10)
+            'logs'        => $logQuery->paginate(10),
+            'pager'       => $this->auditLog->pager,
+            
+            // Kirim filter ke view agar form tidak ter-reset
+            'filters'     => [
+                'search'        => $search,
+                'action'        => $action,
+                'table'         => $table,
+                'date_operator' => $dateOperator,
+                'date_value'    => $dateValue
+            ]
         ];
 
         return view('admin/dashboard', $data);

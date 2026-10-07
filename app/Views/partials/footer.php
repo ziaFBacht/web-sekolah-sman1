@@ -34,11 +34,11 @@
                     </li>
                     <li class="flex items-center gap-3">
                         <i class="fas fa-phone-alt text-primary"></i>
-                        <span>(024) 8310447</span>
+                        <span>-</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <i class="fas fa-envelope text-primary"></i>
-                        <span>info@sman1-smg.sch.id</span>
+                        <span>officialsmansasmg@gmail.com</span>
                     </li>
                 </ul>
             </div>

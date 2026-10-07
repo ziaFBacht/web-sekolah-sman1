@@ -40,6 +40,58 @@
         <h5 class="text-lg font-bold text-gray-800 m-0">Riwayat Aktivitas Sistem</h5>
     </div>
     
+    <!-- Filter -->
+    <div class="px-6 py-4 bg-white border-b border-gray-100">
+        <form action="<?= base_url('admin/dashboard') ?>" method="GET" class="flex flex-col lg:flex-row gap-3 items-center">
+            
+            <!-- Pencarian Teks -->
+            <div class="w-full lg:w-auto flex-1">
+                <input type="text" name="search" value="<?= esc($filters['search'] ?? '') ?>" placeholder="Cari nama data / pengguna..." class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring focus:ring-blue-200 outline-none">
+            </div>
+
+            <!-- Filter Aksi & Tabel -->
+            <div class="w-full lg:w-auto flex gap-2">
+                <select name="action" class="w-full lg:w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 outline-none">
+                    <option value="">Semua Aksi</option>
+                    <option value="INSERT" <?= ($filters['action'] ?? '') == 'INSERT' ? 'selected' : '' ?>>INSERT</option>
+                    <option value="UPDATE" <?= ($filters['action'] ?? '') == 'UPDATE' ? 'selected' : '' ?>>UPDATE</option>
+                    <option value="DELETE" <?= ($filters['action'] ?? '') == 'DELETE' ? 'selected' : '' ?>>DELETE</option>
+                </select>
+                
+                <select name="table" class="w-full lg:w-36 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 outline-none">
+                    <option value="">Semua Tabel</option>
+                    <option value="users" <?= ($filters['table'] ?? '') == 'users' ? 'selected' : '' ?>>Akun (Users)</option>
+                    <option value="berita" <?= ($filters['table'] ?? '') == 'berita' ? 'selected' : '' ?>>Berita</option>
+                    <option value="siswa" <?= ($filters['table'] ?? '') == 'siswa' ? 'selected' : '' ?>>Siswa</option>
+                    <option value="guru" <?= ($filters['table'] ?? '') == 'guru' ? 'selected' : '' ?>>Guru</option>
+                </select>
+            </div>
+
+            <!-- Filter Tanggal Spesifik (Operator & Kalender) -->
+            <div class="w-full lg:w-auto flex gap-2">
+                <select name="date_operator" class="w-1/3 lg:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 outline-none bg-gray-50">
+                    <option value="exact" <?= ($filters['date_operator'] ?? '') == 'exact' ? 'selected' : '' ?>>Saat</option>
+                    <option value="before" <?= ($filters['date_operator'] ?? '') == 'before' ? 'selected' : '' ?>>Sebelum</option>
+                    <option value="after" <?= ($filters['date_operator'] ?? '') == 'after' ? 'selected' : '' ?>>Setelah</option>
+                </select>
+                
+                <input type="date" name="date_value" value="<?= esc($filters['date_value'] ?? '') ?>" class="w-2/3 lg:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 outline-none">
+            </div>
+
+            <!-- Tombol Submit & Reset -->
+            <div class="flex gap-2 w-full lg:w-auto">
+                <button type="submit" class="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                    <i class="fas fa-filter mr-1"></i> Filter
+                </button>
+                <?php if (!empty($filters['search']) || !empty($filters['action']) || !empty($filters['table']) || !empty($filters['date_value'])): ?>
+                    <a href="<?= base_url('admin/dashboard') ?>" class="w-full lg:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition text-center flex items-center justify-center" title="Reset Filter">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
@@ -125,5 +177,10 @@
             </tbody>
         </table>
     </div>
+    <?php if (isset($pager)): ?>
+    <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex justify-center md:justify-end items-center">
+        <?= $pager->links('default', 'tailwind_pagination') ?>
+    </div>
+    <?php endif; ?>
 </div>
 <?= $this->endSection() ?>
