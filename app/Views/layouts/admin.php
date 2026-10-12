@@ -12,7 +12,7 @@
     </script>
     
     <!-- Font Awesome & Custom CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden text-gray-800 font-sans">

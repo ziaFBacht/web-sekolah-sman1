@@ -47,3 +47,7 @@ $routes->get('admin/users/searchNomorInduk', 'AdminController::searchNomorInduk'
 $routes->group('siswa', function($routes) {
     $routes->get('dashboard', 'SiswaController::index');
 });
+
+$routes->group('guru', function($routes) {
+    $routes->get('dashboard', 'GuruController::index');
+});
